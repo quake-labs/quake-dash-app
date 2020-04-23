@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 
 # Imports from this application
 from app import app, server
-from pages import index, insights, map, histogram
+from pages import insights, map, histogram
 
 """
 https://dash-bootstrap-components.opensource.faculty.ai/l/components/navbar
@@ -26,17 +26,18 @@ sticky (string, optional): Stick the navbar to the top or the bottom of the view
 """
 
 navbar = dbc.NavbarSimple(
-    brand='Quake',
-    brand_href='/',
+    brand="Quake Labs",
+    brand_href="/",
     children=[
-        dbc.NavItem(dcc.Link('Map', href='/map', className='nav-link')),
-        dbc.NavItem(dcc.Link('Magnitude Insights', href='/insights', className='nav-link')),
-        dbc.NavItem(dcc.Link('Histogram', href='/histogram', className='nav-link')),
+        dbc.NavItem(
+            dcc.Link("Magnitude Insights", href="/insights", className="nav-link")
+        ),
+        dbc.NavItem(dcc.Link("Histogram", href="/histogram", className="nav-link")),
     ],
-    sticky='top',
-    color='light',
+    sticky="top",
+    color="light",
     light=True,
-    dark=False
+    dark=False,
 )
 
 footer = dbc.Container(
@@ -44,17 +45,17 @@ footer = dbc.Container(
         dbc.Col(
             html.P(
                 [
-                    html.Span('Your Name', className='mr-2'),
-                    html.A(html.I(className='fas fa-envelope-square mr-1'),
-                           href='mailto:<you>@<provider>.com'),
-                    html.A(html.I(className='fab fa-github-square mr-1'),
-                           href='https://github.com/<you>/<repo>'),
-                    html.A(html.I(className='fab fa-linkedin mr-1'),
-                           href='https://www.linkedin.com/in/<you>/'),
-                    html.A(html.I(className='fab fa-twitter-square mr-1'),
-                           href='https://twitter.com/<you>'),
+                    html.Span("Quake Labs", className="mr-2"),
+                    html.A(
+                        html.I(className="fas fa-envelope-square mr-1"),
+                        href="mailto:quakelabs.ds.lambda@gmail.com",
+                    ),
+                    html.A(
+                        html.I(className="fab fa-github-square mr-1"),
+                        href="https://github.com/quake-labs",
+                    ),
                 ],
-                className='lead'
+                className="lead",
             )
         )
     )
@@ -64,29 +65,29 @@ footer = dbc.Container(
 # Plotly Dash User Guide, URL Routing and Multiple Apps
 # https://dash.plot.ly/urls
 
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    navbar,
-    dbc.Container(id='page-content', className='h-25'),
-    html.Hr(),
-    footer
-])
+app.layout = html.Div(
+    [
+        dcc.Location(id="url", refresh=False),
+        navbar,
+        dbc.Container(id="page-content", className="h-25"),
+        html.Hr(),
+        footer,
+    ]
+)
 
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
+
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
-    if pathname == '/':
-        return index.layout
-    elif pathname == '/map':
+    if pathname == "/":
         return map.layout
-    elif pathname == '/insights':
+    elif pathname == "/insights":
         return insights.layout
-    elif pathname == '/histogram':
+    elif pathname == "/histogram":
         return histogram.layout
 
     else:
-        return dcc.Markdown('## Page not found')
+        return dcc.Markdown("## Page not found")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=True)
