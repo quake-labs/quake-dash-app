@@ -98,7 +98,7 @@ def dual_source(value, mag):
     else:
         df = pd.DataFrame()
         for source in SOURCES:
-            api_url = f'https://quake-ds-staging.herokuapp.com/last/{source}/{value}/{float(mag)}'
+            api_url = f'https://quake-ds-production.herokuapp.com/last/{source}/{value}/{float(mag)}'
             data = requests.get(api_url)
             if data.json()['num_quakes'] != 0:
                 df = df.append(data.json()['message'])
@@ -118,7 +118,7 @@ def dual_source(value, mag):
 def dual_last(mag):
     quakes = []
     for i, source in enumerate(SOURCES):
-        api_url = f'https://quake-ds-staging.herokuapp.com/lastQuake/{source}/{float(mag)}'
+        api_url = f'https://quake-ds-production.herokuapp.com/lastQuake/{source}/{float(mag)}'
         data = requests.get(api_url)
         if data.json()['num_quakes'] > 0:
             quakes.append(data.json()['message'])
@@ -140,9 +140,9 @@ def dual_last(mag):
 
 def single_source(value, mag, source):
     if value == 'Quake':
-        api_url = f'https://quake-ds-staging.herokuapp.com/last{value}/{source}/{float(mag)}'
+        api_url = f'https://quake-ds-production.herokuapp.com/last{value}/{source}/{float(mag)}'
     else:
-        api_url = f'https://quake-ds-staging.herokuapp.com/last/{source}/{value}/{float(mag)}'
+        api_url = f'https://quake-ds-production.herokuapp.com/last/{source}/{value}/{float(mag)}'
     data = requests.get(api_url)
     if data.json()['num_quakes'] != 0:
         df = pd.DataFrame(data.json()['message']) if value != 'Quake' else \

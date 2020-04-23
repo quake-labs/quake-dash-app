@@ -106,7 +106,7 @@ def single_source(zip, dist, source):
     location = location_search.by_zipcode(str(zip))
     lat = location.to_dict()['lat']
     lon = location.to_dict()['lng']
-    api_url = f'http://quake-ds-staging.herokuapp.com/history/{source}/{lat},{lon},{dist}'
+    api_url = f'http://quake-ds-production.herokuapp.com/history/{source}/{lat},{lon},{dist}'
     quakes = requests.get(api_url)
     if quakes.json()['num_quakes'] != 0:
         df = pd.DataFrame(quakes.json()['message'])
@@ -130,7 +130,7 @@ def dual_source(zip, dist):
     df = pd.DataFrame()
     # load DF with the two sources
     for source in SOURCES:
-        api_url = f'http://quake-ds-staging.herokuapp.com/history/{source}/{lat},{lon},{dist}'
+        api_url = f'http://quake-ds-production.herokuapp.com/history/{source}/{lat},{lon},{dist}'
         quakes = requests.get(api_url)
         if quakes.json()['num_quakes'] != 0:
             df = df.append(quakes.json()['message'])

@@ -10,12 +10,11 @@ import pandas as pd
 from app import app
 
 
-
 column1 = dbc.Col(
     [
         dcc.Markdown(
             """
-        
+
             ## Plots
 
 
@@ -39,6 +38,7 @@ column1 = dbc.Col(
     md=4,
 )
 
+
 @app.callback(
     Output('histogram_plot', 'figure'),
     [Input('timeFrame', 'value')])
@@ -46,7 +46,7 @@ def update_output(value):
     data = requests.get(f'https://quake-ds-production.herokuapp.com/{value}')
     df = pd.DataFrame(data.json()['message']) if value != 'lastQuake' else \
         pd.DataFrame(data.json()['message'], index=[0])
-    
+
     fig = px.histogram(df, x='mag')
     return fig
 
