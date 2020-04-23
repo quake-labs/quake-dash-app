@@ -12,7 +12,6 @@ import datetime
 from app import app
 from uszipcode import SearchEngine
 
-location_search = SearchEngine(simple_zipcode=True)
 
 SOURCES = ['USGS', 'EMSC']
 
@@ -21,7 +20,9 @@ column1 = dbc.Col(
         dcc.Markdown(
             """
 
-            ## Recent Earthquakes
+            # Earthquake history
+            This shows earthquake history for US zip codes.
+
             The map at the right shows earthquakes for the specified area below.
             Larger dots are larger earthquakes.
 
@@ -56,9 +57,9 @@ column1 = dbc.Col(
             dcc.Slider(
                 id='distance',
                 min=0,
-                max=30,
-                step=.5,
-                value=5.5
+                max=100,
+                step=10,
+                value=20
             ),
             dcc.Markdown(id='distanceOut')
         ])
@@ -82,35 +83,44 @@ def display_min_mag(mag_num):
      dash.dependencies.Input('zip', 'value'),
      dash.dependencies.Input('source', 'value')])
 def update_output(dist, zip, source):
-    if source != 'BOTH':
-        print('running with one source')
-        return single_source(zip, dist, source)
+    # check for valid zip code
+    if len(str(zip)) == 5:
+        # check out sources
+        if source != 'BOTH':
+            print('running with one source')
+            return single_source(zip, dist, source)
+        else:
+            print('running with two sources')
+            return dual_source(zip, dist)
     else:
-        print('running with two sources')
-        return dual_source(zip, dist)
+        # invalid zip code option
+        data, layout = empty_fig()
+        title = f'Please enter a valid US zip code'
+
+        return build_fig(data, layout, title)
 
 
+# This creates an answer from one source
 def single_source(zip, dist, source):
+    location_search = SearchEngine(simple_zipcode=True)
     location = location_search.by_zipcode(str(zip))
     lat = location.to_dict()['lat']
     lon = location.to_dict()['lng']
-    api_url = f'http://quake-ds-staging.herokuapp.com/history/{source}/{lat}, {lon}, {dist}'
-    data = requests.get(api_url)
-    if data.json()['num_quakes'] != 0:
-        df = pd.DataFrame(data.json()['message'])
+    api_url = f'http://quake-ds-staging.herokuapp.com/history/{source}/{lat},{lon},{dist}'
+    quakes = requests.get(api_url)
+    if quakes.json()['num_quakes'] != 0:
+        df = pd.DataFrame(quakes.json()['message'])
         df['color'] = 'blue' if source == 'USGS' else 'yellow'
-        data, layout = loaded_fig(df)
+        data, layout = loaded_fig(df, lat, lon)
         title = f'Quakes within {dist} KM of {zip}'
     else:
-        data, layout = empty_fig()
-        title = f'No Quakes have occured within {dist} of {zip}'
+        data, layout = empty_fig(lat, lon)
+        title = f'No Quakes have occured within {dist} KM of {zip}'
 
-    fig = go.Figure(data=data, layout=layout)
-    fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
-    return dcc.Graph(figure=fig)
+    return build_fig(data, layout, title, quakes.json()['boundingA'], quakes.json()['boundingB'])
 
 
-def loaded_fig(df):
+def loaded_fig(df, centLat, centLon):
     df['lat'] = df['lat'].apply(lambda x: str(x))
     df['lon'] = df['lon'].apply(lambda x: str(x))
     data = [
@@ -135,17 +145,17 @@ def loaded_fig(df):
         mapbox=go.layout.Mapbox(
             bearing=0,
             center=go.layout.mapbox.Center(
-                lat=0,
-                lon=0
+                lat=centLat,
+                lon=centLon
             ),
             pitch=0,
-            zoom=.5
+            zoom=7
         ),
     )
     return data, layout
 
 
-def empty_fig():
+def empty_fig(centLat=None, centLon=None):
     data = [
         go.Scattermapbox(
             lat=[0],
@@ -160,14 +170,29 @@ def empty_fig():
         mapbox=go.layout.Mapbox(
             bearing=0,
             center=go.layout.mapbox.Center(
-                lat=0,
-                lon=0
+                lat=centLat if centLat != None else 0,
+                lon=centLon if centLon != None else 0
             ),
             pitch=0,
-            zoom=.5
+            zoom=7
         ),
     )
     return data, layout
+
+
+def build_fig(data, layout, title, locA=None, locB=None):
+    fig = go.Figure(data=data, layout=layout)
+    fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title, showlegend=False)
+    if locA != None:
+        fig.add_trace(go.Scattermapbox(
+            mode="lines",
+            lon=[locA[1], locB[1], locB[1], locA[1], locA[1]],
+            lat=[locA[0], locA[0], locB[0], locB[0], locA[0]],
+            marker={'size': 0,
+                    'color': 'red'})
+        )
+
+    return dcc.Graph(figure=fig)
 
 
 column2 = dbc.Col([html.Div(
