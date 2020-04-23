@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 
 # Imports from this application
 from app import app, server
-from pages import insights, map, histogram
+from pages import history, map, histogram
 
 """
 https://dash-bootstrap-components.opensource.faculty.ai/l/components/navbar
@@ -30,7 +30,7 @@ navbar = dbc.NavbarSimple(
     brand_href="/",
     children=[
         dbc.NavItem(
-            dcc.Link("Magnitude Insights", href="/insights", className="nav-link")
+            dcc.Link("Local History", href="/history", className="nav-link")
         ),
         dbc.NavItem(dcc.Link("Histogram", href="/histogram", className="nav-link")),
     ],
@@ -80,8 +80,8 @@ app.layout = html.Div(
 def display_page(pathname):
     if pathname == "/":
         return map.layout
-    elif pathname == "/insights":
-        return insights.layout
+    elif pathname == "/history":
+        return history.layout
     elif pathname == "/histogram":
         return histogram.layout
 

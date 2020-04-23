@@ -13,6 +13,7 @@ plotly = "*"
 jupyter = "*"
 pandas = "*"
 requests = "*"
+uszipcode = "*"
 
 [requires]
 python_version = "3.7"
