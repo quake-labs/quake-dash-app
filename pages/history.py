@@ -112,12 +112,39 @@ def single_source(zip, dist, source):
         df = pd.DataFrame(quakes.json()['message'])
         df['color'] = 'blue' if source == 'USGS' else 'yellow'
         data, layout = loaded_fig(df, lat, lon)
-        title = f'Quakes within {dist} KM of {zip}'
+        title = f'Quakes within {dist} KM of {zip} from {source}'
     else:
         data, layout = empty_fig(lat, lon)
-        title = f'No Quakes have occured within {dist} KM of {zip}'
+        title = f'No Quakes have occured within {dist} KM of {zip} in {source}'
 
     return build_fig(data, layout, title, quakes.json()['boundingA'], quakes.json()['boundingB'])
+
+
+def dual_source(zip, dist):
+    # get the lat and lon from zip
+    location_search = SearchEngine(simple_zipcode=True)
+    location = location_search.by_zipcode(str(zip))
+    lat = location.to_dict()['lat']
+    lon = location.to_dict()['lng']
+
+    df = pd.DataFrame()
+    # load DF with the two sources
+    for source in SOURCES:
+        api_url = f'http://quake-ds-staging.herokuapp.com/history/{source}/{lat},{lon},{dist}'
+        quakes = requests.get(api_url)
+        if quakes.json()['num_quakes'] != 0:
+            df = df.append(quakes.json()['message'])
+
+    # check that there are any quakes
+    if df.shape[0] > 0:
+        title = f'Quakes within {dist} KM of {zip} from both USGS and EMSC'
+        df['color'] = df['Oceanic'].apply(lambda x: 'yellow' if x != x else 'blue')
+        data, layout = loaded_fig(df, lat, lon)
+    else:
+        title = f'No Quakes have occured within {dist} KM of {zip} in either USGS or EMSC'
+        data, layout = empty_fig(lat, lon)
+
+    return build_fig(data, layout, title,  quakes.json()['boundingA'], quakes.json()['boundingB'])
 
 
 def loaded_fig(df, centLat, centLon):
