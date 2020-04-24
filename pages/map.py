@@ -160,7 +160,7 @@ def single_source(value, mag, source):
 def build_fig(data, layout, title):
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
-    fig.update_layout(margin={'l':0,'r':0,'b':0})
+    fig.update_layout(margin={'l':0,'r':0,'b':0, 't':50})
     return dcc.Graph(figure=fig)
 
 def loaded_fig(df):
