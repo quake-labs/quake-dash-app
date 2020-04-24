@@ -2,123 +2,98 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+from dash_dangerously_set_inner_html import DangerouslySetInnerHTML as rawHtml
 from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
 from app import app
-
-readme = dcc.Markdown(
-'''
-# Quake API
+from .readmetables import team, routes
 
 
-## 1️⃣ Project Overview
+readme = dbc.Col([
+    html.Div(html.H1('Quake Labs API'), style={'margin-top': 20, 'margin-bottom': 20}),
 
-Quake Labs was produced as a project for Lambda School.
+    html.Div([html.H2('Project Overview'),
+              dcc.Markdown(
+        '''Quake Labs is powered by the Quake Labs API. The API is publicly available at the links below.
+        The Quake Labs API is powered by two AWS Lambda functions which collect data from USGS and EMSC's publicly
+        available earthquake data and stores it in an AWS RDS instance. The fucntion of this app is to provide easy access
+        to earthquake information and provide alerts to affected individuals who sign up for text alerts.
+        '''
+    )
+    ]),  # closes project overview div
 
-[Product Canvas](https://www.notion.so/User-Research-8cd64de109404266b2537457a426738d)
+    html.Div([html.H2('Team Members'),
+              dcc.Markdown('The Quake Labs API and Dashboard were designed and built by:'),
+              html.Div(rawHtml(team), style={'text-align': 'center'})
+              ]),  # closes team members div
+    html.Div([html.H2('Accessing the API'),
+              dcc.Markdown(
+                  'Base route 👉 https://quake-ds-production.herokuapp.com/ (Returns no data, just a confirmation that the API is running)'),
+              html.H3('Routes:'),
+              rawHtml(routes)
+              ]),  # closes accessing the API div
+    html.Div([html.H2('Route Usage'),
+              dcc.Markdown('''
+            1. `/lastQuake/SOURCE/MAGNITUDE` - Returns the last quake over the given magnitude from the source
 
-## 2️⃣ Team Members
+            `SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
 
+            `MAGNITUDE`: a number 0-11 (accepts floats and ints) defaults to 5.5
 
-|                                       [Eyve Geordan](https://github.com/eyvonne)                                        |                                       [J Tyler Sheppard](https://github.com/jtsheppard)                                        |                                       [Ashwin Swamy](https://github.com/ash12hub)                                        |
-| :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
-|                      ![Eyve Pic]("https://media-exp1.licdn.com/dms/image/C5603AQFERauBl6COOA/profile-displayphoto-shrink_200_200/0?e=1593043200&v=beta&t=aYaek2d2OEW_E5NJW52LvbM6XUBY5GLHXzA9-GMY1c8") (https://github.com/eyvonne)                       |                      [<img src="https://media-exp1.licdn.com/dms/image/C4E03AQGF_MRS5-sEFw/profile-displayphoto-shrink_200_200/0?e=1593043200&v=beta&t=hYIR_Dfb7OB5M1kLJWzVZAcJIbFH_k6CPmg7MUy7woQ" width = "200" />](https://github.com/jtsheppard)                       |                      [<img src="ashwin.jpg" width = "200" />](https://github.com/ash12hub)                      |
-|                 [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/eyvonne)                 |            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/jtsheppard)             |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ash12hub)            |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/eyvonne-geordan-2a2b55168/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/jtsheppard/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/) |
+            2. `/last/SOURCE/TIME/MAGNITUDE` - Gets the quakes over the given timeframe
 
-## 3️⃣ Endpoints
+            `SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
 
-### How to connect to the data API
+            `TIME`: choice of 'hour', 'day', 'week' or 'month', returns quakes over the given time period
 
-Production Endpoint 👉 https://quake-ds-production.herokuapp.com/
+            `MAGNITUDE`: a number 0-11 (accepts floats and ints) defaults to 5.5
 
-Staging Endpoint 👉 https://quake-ds-staging.herokuapp.com/
+            3. `/history/SOURCE/LAT,LON,DIST` - Returns all quakes in a given area
 
-#### Overview of Main Routes
+            `SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
 
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/lastQuake/SOURCE/MAGNITUDE` | all users      | Returns the last quake over the given magnitude from the source  |
-| GET    | `/last/SOURCE/TIME/MAGNITUDE` | all users      | Gets the quakes over the given timeframe |
-| GET    | `/history/SOURCE/LAT,LON,DIST` | all users      | Returns all quakes in a given area |
+            `LAT` and `LON` are the central latitude and longitude
 
-### How to use the routes
+            `DIST` is the distance in miles from the center to search from''')
+              ]),  # closes route usage div
+    html.Div([html.H2('Tech Stack'),
+              dcc.Markdown('''
+            - [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+            - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/)
+            - [AWS Lambda](https://docs.aws.amazon.com/lambda/index.html)
+            - [AWS RDS](https://docs.aws.amazon.com/rds/index.html)
+            - [Heroku](https://devcenter.heroku.com)
+            ''')
+              ]),  # closes tech stack div
+    html.Div([html.H2('Architecture'),
+              dcc.Markdown('''
+    ![architecture](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1b61d2ba-287a-4a01-8c6f-98ae376dc2c9%2Fquake-architect-diagram.jpg)
+    ''')
+              ]),  # closes Architecture div
+    html.Div([html.H2('Data Sources'),
+              dcc.Markdown('''
+    Our primary data source is the USGS geojson feed. [View the documentation](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php), or [search their data](https://earthquake.usgs.gov/earthquakes/search/).
 
-1. `/lastQuake/SOURCE/MAGNITUDE` - Returns the last quake over the given magnitude from the source
+    For a further history of earthquakes we also collected the data available on [EMSC](https://www.emsc-csem.org/Earthquake/).
+    ''')
+              ]),  # closes Data Sources div
+    html.Div([html.H2('Feature Requests and Contributions'),
+              dcc.Markdown('''
+        Source code for the API is available on [GitHub](https://github.com/quake-labs/quake-ds)
 
-`SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
-`MAGNITUDE`: a number 0-11 (accepts floats and ints) defaults to 5.5
+        Source code for the Dashboard is also available on [GitHub](https://github.com/quake-labs/quake-dash-app)
 
-2. `/last/SOURCE/TIME/MAGNITUDE` - Gets the quakes over the given timeframe
+        We would love to hear from you about new features which would improve this app and further the aims of our project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
 
-`SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
-`TIME`: choice of 'hour', 'day', 'week' or 'month', returns quakes over the given time period
-`MAGNITUDE`: a number 0-11 (accepts floats and ints) defaults to 5.5
+        If you have developed a patch, bug fix, or new feature that would improve this app, please submit a pull request. It is best to communicate your ideas with the developers first before investing a great deal of time into a pull request to ensure that it will mesh smoothly with the project.
 
-3. `/history/SOURCE/LAT,LON,DIST` - Returns all quakes in a given area
+        Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
 
-`SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
-`LAT` and `LON` are the central latitude and longitude
-`DIST` is the distance in miles from the center to search from
+        ''')
+              ]),  # closes feature requests div
+    html.Div(html.P('Please feel free to contact our team with any questions at quakelabs@gmail.com'))
+])  # closes readme column
 
-## 4️⃣ Tech Stack 📚
-
-- [Flask](https://flask.palletsprojects.com/en/1.1.x/)
-- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/)
-
-### Architecture
-
-![architecture](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1b61d2ba-287a-4a01-8c6f-98ae376dc2c9%2Fquake-architect-diagram.jpg)
-
-## 5️⃣ Data Sources
-
--   [USGS Source 1](https://earthquake.usgs.gov/earthquakes/search/)
--   [USGS Source 2](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
--   [ESMC](https://www.emsc-csem.org/Earthquake/seismologist.php)
-
-### Extra Python Notebooks
-
-[Python Notebook 1](https://colab.research.google.com/drive/1g_zGrP7LCK4FNdJycQQcRJ_22iKL0_F6)
-
-## 6️⃣ Contributing
-
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
-
-Please note we have a [code of conduct](./code_of_conduct.md.md). Please follow it in all your interactions with the project.
-
-### Issue/Bug Request
-
- **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
- - Check first to see if your issue has already been reported.
- - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
- - Create a live example of the problem.
- - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes,  where you believe the issue is originating from, and any potential solutions you have considered.
-
-### Feature Requests
-
-We would love to hear from you about new features which would improve this app and further the aims of our project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
-
-### Pull Requests
-
-If you have developed a patch, bug fix, or new feature that would improve this app, please submit a pull request. It is best to communicate your ideas with the developers first before investing a great deal of time into a pull request to ensure that it will mesh smoothly with the project.
-
-Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
-
-#### Pull Request Guidelines
-
-- Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-- Update the README.md with details of changes to the interface, including new plist variables, exposed ports, useful file locations and container parameters.
-- Ensure that your code conforms to our existing code conventions and test coverage.
-- Include the relevant issue number, if applicable.
-- You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
-
-### Attribution
-
-These contribution guidelines have been adapted from [this good-Contributing.md-template](https://gist.github.com/PurpleBooth/b24679402957c63ec426).
-
-
-'''
-)
 
 layout = html.Div(readme)

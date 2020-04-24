@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1175439c7b14d6bbdde5c1d24813ca3936536009bd4205e0f51d7fd216c0e521"
+            "sha256": "733a90921249ae9d9032c1d84f0190849c792666887a83dbfcd83ca98a9fb62c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -21,7 +21,7 @@
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "platform_system == 'Darwin'",
+            "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
         },
         "attrs": {
@@ -91,6 +91,13 @@
                 "sha256:ea72f514d841caa1b42a1c6092d00c05cc63768916d33563e994114c1a022656"
             ],
             "version": "==1.9.1"
+        },
+        "dash-dangerously-set-inner-html": {
+            "hashes": [
+                "sha256:d7fe990755851fc4d2e22c8f10b7aea055cabf380bbceefba589779b269fea64"
+            ],
+            "index": "pypi",
+            "version": "==0.0.2"
         },
         "dash-html-components": {
             "hashes": [
