@@ -94,10 +94,7 @@ def update_output(dist, zip, source):
             return dual_source(zip, dist)
     else:
         # invalid zip code option
-        data, layout = empty_fig()
-        title = f'Please enter a valid US zip code'
-
-        return build_fig(data, layout, title)
+        return invalid_zip(zip)
 
 
 # This creates an answer from one source
@@ -106,6 +103,9 @@ def single_source(zip, dist, source):
     location = location_search.by_zipcode(str(zip))
     lat = location.to_dict()['lat']
     lon = location.to_dict()['lng']
+    if lat == None:
+        return invalid_zip(zip)
+
     api_url = f'http://quake-ds-production.herokuapp.com/history/{source}/{lat},{lon},{dist}'
     quakes = requests.get(api_url)
     if quakes.json()['num_quakes'] != 0:
@@ -126,6 +126,9 @@ def dual_source(zip, dist):
     location = location_search.by_zipcode(str(zip))
     lat = location.to_dict()['lat']
     lon = location.to_dict()['lng']
+    if lat == None:
+        return invalid_zip(zip)
+
 
     df = pd.DataFrame()
     # load DF with the two sources
@@ -146,6 +149,11 @@ def dual_source(zip, dist):
 
     return build_fig(data, layout, title,  quakes.json()['boundingA'], quakes.json()['boundingB'])
 
+
+def invalid_zip(zip):
+    title = f'{zip} is not a valid US zip code'
+    data, layout = empty_fig(39.8283,-98.5795)
+    return build_fig(data, layout, title)
 
 def loaded_fig(df, centLat, centLon):
     df['lat'] = df['lat'].apply(lambda x: str(x))
@@ -176,7 +184,7 @@ def loaded_fig(df, centLat, centLon):
                 lon=centLon
             ),
             pitch=0,
-            zoom=7
+            zoom=8
         ),
     )
     return data, layout
@@ -201,7 +209,7 @@ def empty_fig(centLat=None, centLon=None):
                 lon=centLon if centLon != None else 0
             ),
             pitch=0,
-            zoom=8 if centLat != None else 0.5
+            zoom=3 if centLat == 39.8283 else 8 if centLat!=None else 0.5
         ),
     )
     return data, layout
