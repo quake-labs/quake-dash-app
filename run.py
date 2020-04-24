@@ -35,9 +35,10 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dcc.Link("Histogram", href="/histogram", className="nav-link")),
     ],
     sticky="top",
-    color="light",
-    light=True,
-    dark=False,
+    color="dark",
+    light=False,
+    dark=True,
+    style={'height': '15px'}
 )
 
 footer = dbc.Container(
