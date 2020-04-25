@@ -14,11 +14,9 @@ from app import app
 SOURCES = ['USGS', 'EMSC']
 
 column1 = dbc.Col(
-    [
+    html.Div([
         dcc.Markdown(
             """
-
-            ## Recent Earthquakes
             The map at the right shows the recent earthquakes. Larger dots are
             larger earthquakes.
 
@@ -64,8 +62,8 @@ column1 = dbc.Col(
             ),
             dcc.Markdown(id='sliderOutput')
         ])
-    ],
-    md=2,
+    ], style={'margin-top': 50}),
+    md=3,
 )
 
 # fig = go.Figure()
@@ -110,9 +108,7 @@ def dual_source(value, mag):
         title = f'No Quakes over {mag} from either USGS or EMSC in the last {value.strip("/")}'
         data, layout = empty_fig()
 
-    fig = go.Figure(data=data, layout=layout)
-    fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
-    return dcc.Graph(figure=fig)
+    return build_fig(data, layout, title)
 
 
 def dual_last(mag):
@@ -133,9 +129,7 @@ def dual_last(mag):
         title = f'No Quakes Over {mag} in either USGS or EMSC'
         data, layout = empty_fig()
 
-    fig = go.Figure(data=data, layout=layout)
-    fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
-    return dcc.Graph(figure=fig)
+    return build_fig(data, layout, title)
 
 
 def single_source(value, mag, source):
@@ -161,10 +155,13 @@ def single_source(value, mag, source):
         else:
             title = f"No Quakes over {mag} in the last {value.strip('last/')} to display in {source}"
 
+    return build_fig(data, layout, title)
+
+def build_fig(data, layout, title):
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
+    fig.update_layout(margin={'l':0,'r':0,'b':0, 't':50})
     return dcc.Graph(figure=fig)
-
 
 def loaded_fig(df):
     df['lat'] = df['lat'].apply(lambda x: str(x))
@@ -230,4 +227,8 @@ column2 = dbc.Col([html.Div(
     id='wheretheDataGoes')
 ])
 
-layout = dbc.Row([column1, column2], style={'margin-top': 100, 'height': 1000})
+layout = html.Div([
+    html.Div(dbc.Row(dbc.Col(html.H1('Recent Worldwide Earthquakes'))), style={'text-align':'center',
+                                                                               'margin-top': 40}),
+    dbc.Row([column1, column2])
+    ])
