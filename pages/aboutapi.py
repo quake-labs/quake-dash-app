@@ -15,7 +15,7 @@ readme = dbc.Col([
 
     html.Div([html.H2('Project Overview'),
               dcc.Markdown(
-        '''Quake Labs is powered by the Quake Labs API. The API is publicly available at the links below.
+        '''Quake Labs is powered by the Quake Labs API. The API is publicly available at the link below.
         The Quake Labs API is powered by two AWS Lambda functions which collect data from USGS and EMSC's publicly
         available earthquake data and stores it in an AWS RDS instance. The fucntion of this app is to provide easy access
         to earthquake information and provide alerts to affected individuals who sign up for text alerts.
@@ -32,7 +32,7 @@ readme = dbc.Col([
                   'Base route 👉 https://quake-ds-production.herokuapp.com/ (Returns no data, just a confirmation that the API is running)'),
               html.H3('Routes:'),
               rawHtml(routes)
-              ]),  # closes accessing the API div
+              ], style={'margin-top': 10}),  # closes accessing the API div
     html.Div([html.H2('Route Usage'),
               dcc.Markdown('''
             1. `/lastQuake/SOURCE/MAGNITUDE` - Returns the last quake over the given magnitude from the source
@@ -55,8 +55,32 @@ readme = dbc.Col([
 
             `LAT` and `LON` are the central latitude and longitude
 
-            `DIST` is the distance in miles from the center to search from''')
-              ]),  # closes route usage div
+            `DIST` is the distance in miles from the center to search from
+
+            4. `/zip/ZIPCODE/DIST` - reutrns last quake around a given zip code
+
+            `ZIPCODE`: a US 5 digit zip code
+
+            `DIST`: the distance out to check for the last quake, defaults to 20km''')
+              ], style={'margin-top': 20}),  # closes route usage div
+    html.Div([html.H2('Response Format'),
+              dcc.Markdown('''
+The API will return data in the following format:
+```
+ "message": Contains the quakes returned in format:
+         "Oceanic": a boolean value for if the quake was in the ocean (only for USGS quakes, not reliable),
+         "id": A numerical id of the quake in our database (unique per quake),
+         "lat": lattitude in degrees
+         "lon": longitude in degrees
+         "mag": Magnitude of the earthquake
+         "place": a Human readable representation of approximatly where the quake is
+         "time": the time that the quake occured in UTC in ms since Epoch}
+ "num_quakes": the number of quakes returned
+ "status_code": standard web status codes
+ "boundingA": Only returned on history route, Northwest corner of the bounding box
+ "boundingB": Only returned on history route, Southeast corner of the bounding box
+        ''')
+              ]),  # closes response format div
     html.Div([html.H2('Tech Stack'),
               dcc.Markdown('''
             - [Flask](https://flask.palletsprojects.com/en/1.1.x/)

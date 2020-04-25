@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 
 # Imports from this application
 from app import app, server
-from pages import history, map, histogram, aboutapi
+from pages import history, map, histogram, aboutapi, tips
 
 """
 https://dash-bootstrap-components.opensource.faculty.ai/l/components/navbar
@@ -32,7 +32,7 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(
             dcc.Link("Local History", href="/history", className="nav-link")
         ),
-        dbc.NavItem(dcc.Link("Histogram", href="/histogram", className="nav-link")),
+        dbc.NavItem(dcc.Link("Earthquake Saftey Tips", href="/tips", className="nav-link")),
         dbc.NavItem(dcc.Link("About The API", href="/aboutapi", className="nav-link")),
     ],
     sticky="top",
@@ -88,6 +88,8 @@ def display_page(pathname):
         return histogram.layout
     elif pathname == '/aboutapi':
         return aboutapi.layout
+    elif pathname == '/tips':
+        return tips.layout
     else:
         return dcc.Markdown("## Page not found")
 

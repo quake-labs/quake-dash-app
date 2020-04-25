@@ -1,7 +1,7 @@
 # this is just the text of the about the team table in raw html to be imported
 
 team = '''
-  <table>
+  <table width=100%>
     <tr>
       <td><a href='https://github.com/eyvonne'>Eyve Geordan</a></td>
       <td><a href='https://github.com/jtsheppard'>J Tyler Sheppard</a></td>
@@ -47,4 +47,9 @@ routes = '''
     <td>`/history/SOURCE/LAT,LON,DIST`</td>
     <td>Public</td>
     <td>Returns all quakes in a given area</td>
+    </tr>
+    <td>GET</td>
+    <td>`/zip/ZIPCODE/DIST`</td>
+    <td>Public</td>
+    <td>Returns last quake in a given area</td>
 '''
