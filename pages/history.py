@@ -13,6 +13,9 @@ from app import app
 from uszipcode import SearchEngine
 from . import BASE_URL
 
+from dateutil import tz
+import sys
+
 SOURCES = ['USGS', 'EMSC']
 
 column1 = dbc.Col(
@@ -61,7 +64,8 @@ column1 = dbc.Col(
                 step=10,
                 value=20
             ),
-            dcc.Markdown(id='distanceOut')
+            dcc.Markdown(id='distanceOut'),
+            html.Div(id='quakeDetails')
         ])
     ], style={'margin-top': 20}),
     md=3,
@@ -186,6 +190,7 @@ def loaded_fig(df, centLat, centLon):
             pitch=0,
             zoom=8
         ),
+        clickmode='event+select'
     )
     return data, layout
 
@@ -228,16 +233,59 @@ def build_fig(data, layout, title, locA=None, locB=None):
                     'color': 'red'})
         )
 
-    return dcc.Graph(figure=fig)
+    return dcc.Graph(figure=fig, id='theMap')
 
 
-column2 = dbc.Col([html.Div(
-    id='themapgoeshere')
-])
+column2 = dbc.Col([html.Div(dcc.Graph(id='theMap'),
+                            id='themapgoeshere')
+                   ])
+
+
+# Detailed Quakes
+@app.callback(
+    dash.dependencies.Output('quakeDetails', 'children'),
+    [dash.dependencies.Input('theMap', 'clickData'),
+     dash.dependencies.Input('zip', 'value')])
+def show_details(clickData, zip):
+    search = SearchEngine(simple_zipcode=True)
+    results = search.by_zipcode(str(zip)).to_dict()['timezone']
+    try:
+        text = clickData['points'][0]['text'].split('<br>')
+        time = text[1].strip('UTC time: ')
+        local_time, your_time = get_local_time(time, results)
+        display = [html.H4('Details:'),
+                   dcc.Markdown(f'''
+            **Place:** {text[0].strip('place: ')}
+
+            {text[1]}
+
+            Local time: {local_time}
+
+            Your Time: {your_time}
+
+            {text[2]}
+        ''')]
+
+        return display
+    except:
+        e = sys.exc_info()[0]
+        print(e)
+
+
+def get_local_time(utc_time, to):
+    from_zone = tz.gettz('UTC')
+    to_zone = tz.gettz(f'US/{to}')
+    your_zone = tz.tzlocal()
+    utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
+    utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
+    local_time = utc.astimezone(to_zone)
+    your_time = utc.astimezone(your_zone)
+    return local_time, your_time
+
 
 layout = html.Div([
     html.Div(dbc.Row(dbc.Col(html.H1('Local Earthquake History'))), style={'text-align': 'center',
                                                                            'margin-top': 40,
                                                                            'margin-bottom': 0}),
-    dbc.Row([column1, column2])
+    dbc.Row([column1, column2]),
 ])
