@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import datetime
 from app import app
+from . import BASE_URL
 
 SOURCES = ['USGS', 'EMSC']
 
@@ -96,7 +97,7 @@ def dual_source(value, mag):
     else:
         df = pd.DataFrame()
         for source in SOURCES:
-            api_url = f'https://quake-ds-production.herokuapp.com/last/{source}/{value}/{float(mag)}'
+            api_url = BASE_URL + f'last/{source}/{value}/{float(mag)}'
             data = requests.get(api_url)
             if data.json()['num_quakes'] != 0:
                 df = df.append(data.json()['message'])
@@ -114,7 +115,7 @@ def dual_source(value, mag):
 def dual_last(mag):
     quakes = []
     for i, source in enumerate(SOURCES):
-        api_url = f'https://quake-ds-production.herokuapp.com/lastQuake/{source}/{float(mag)}'
+        api_url = BASE_URL + f'lastQuake/{source}/{float(mag)}'
         data = requests.get(api_url)
         if data.json()['num_quakes'] > 0:
             quakes.append(data.json()['message'])
@@ -157,11 +158,13 @@ def single_source(value, mag, source):
 
     return build_fig(data, layout, title)
 
+
 def build_fig(data, layout, title):
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
-    fig.update_layout(margin={'l':0,'r':0,'b':0, 't':50})
+    fig.update_layout(margin={'l': 0, 'r': 0, 'b': 0, 't': 50})
     return dcc.Graph(figure=fig)
+
 
 def loaded_fig(df):
     df['lat'] = df['lat'].apply(lambda x: str(x))
@@ -228,7 +231,7 @@ column2 = dbc.Col([html.Div(
 ])
 
 layout = html.Div([
-    html.Div(dbc.Row(dbc.Col(html.H1('Recent Worldwide Earthquakes'))), style={'text-align':'center',
+    html.Div(dbc.Row(dbc.Col(html.H1('Recent Worldwide Earthquakes'))), style={'text-align': 'center',
                                                                                'margin-top': 40}),
     dbc.Row([column1, column2])
-    ])
+])

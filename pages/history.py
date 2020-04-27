@@ -11,7 +11,7 @@ import numpy as np
 import datetime
 from app import app
 from uszipcode import SearchEngine
-
+from . import BASE_URL
 
 SOURCES = ['USGS', 'EMSC']
 
@@ -63,7 +63,7 @@ column1 = dbc.Col(
             ),
             dcc.Markdown(id='distanceOut')
         ])
-    ], style={'margin-top':20}),
+    ], style={'margin-top': 20}),
     md=3,
 )
 
@@ -106,7 +106,7 @@ def single_source(zip, dist, source):
     if lat == None:
         return invalid_zip(zip)
 
-    api_url = f'http://quake-ds-production.herokuapp.com/history/{source}/{lat},{lon},{dist}'
+    api_url = BASE_URL + f'history/{source}/{lat},{lon},{dist}'
     quakes = requests.get(api_url)
     if quakes.json()['num_quakes'] != 0:
         df = pd.DataFrame(quakes.json()['message'])
@@ -129,11 +129,10 @@ def dual_source(zip, dist):
     if lat == None:
         return invalid_zip(zip)
 
-
     df = pd.DataFrame()
     # load DF with the two sources
     for source in SOURCES:
-        api_url = f'http://quake-ds-production.herokuapp.com/history/{source}/{lat},{lon},{dist}'
+        api_url = BASE_URL + f'history/{source}/{lat},{lon},{dist}'
         quakes = requests.get(api_url)
         if quakes.json()['num_quakes'] != 0:
             df = df.append(quakes.json()['message'])
@@ -152,8 +151,9 @@ def dual_source(zip, dist):
 
 def invalid_zip(zip):
     title = f'{zip} is not a valid US zip code'
-    data, layout = empty_fig(39.8283,-98.5795)
+    data, layout = empty_fig(39.8283, -98.5795)
     return build_fig(data, layout, title)
+
 
 def loaded_fig(df, centLat, centLon):
     df['lat'] = df['lat'].apply(lambda x: str(x))
@@ -209,7 +209,7 @@ def empty_fig(centLat=None, centLon=None):
                 lon=centLon if centLon != None else 0
             ),
             pitch=0,
-            zoom=3 if centLat == 39.8283 else 8 if centLat!=None else 0.5
+            zoom=3 if centLat == 39.8283 else 8 if centLat != None else 0.5
         ),
     )
     return data, layout
@@ -218,7 +218,7 @@ def empty_fig(centLat=None, centLon=None):
 def build_fig(data, layout, title, locA=None, locB=None):
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title, showlegend=False)
-    fig.update_layout(margin={'l':0,'r':0,'b':0,'t':50})
+    fig.update_layout(margin={'l': 0, 'r': 0, 'b': 0, 't': 50})
     if locA != None:
         fig.add_trace(go.Scattermapbox(
             mode="lines",
@@ -236,8 +236,8 @@ column2 = dbc.Col([html.Div(
 ])
 
 layout = html.Div([
-    html.Div(dbc.Row(dbc.Col(html.H1('Local Earthquake History'))), style={'text-align':'center',
+    html.Div(dbc.Row(dbc.Col(html.H1('Local Earthquake History'))), style={'text-align': 'center',
                                                                            'margin-top': 40,
                                                                            'margin-bottom': 0}),
     dbc.Row([column1, column2])
-    ])
+])
