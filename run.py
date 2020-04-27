@@ -7,8 +7,10 @@ from dash.dependencies import Input, Output
 
 # Imports from this application
 from app import app, server
-from pages import history, map, histogram, aboutapi, tips
+from pages import history, map, histogram, aboutapi, tips, search
 
+# Import RE for dynamic URLs for quake details
+import re
 """
 https://dash-bootstrap-components.opensource.faculty.ai/l/components/navbar
 
@@ -90,6 +92,10 @@ def display_page(pathname):
         return aboutapi.layout
     elif pathname == '/tips':
         return tips.layout
+    elif re.search('/quakedetail/*', str(pathname)):
+        return detail.layout
+    elif pathname == '/search':
+        return search.layout
     else:
         return dcc.Markdown("## Page not found")
 
