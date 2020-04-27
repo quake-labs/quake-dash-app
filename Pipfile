@@ -15,6 +15,7 @@ pandas = "*"
 requests = "*"
 uszipcode = "*"
 dash-dangerously-set-inner-html = "*"
+timezonefinder = "*"
 
 [requires]
 python_version = "3.7"

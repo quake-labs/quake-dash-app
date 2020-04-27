@@ -27,7 +27,7 @@ column1 = dbc.Col(
             This shows earthquake history for US zip codes.
 
             The map at the right shows earthquakes for the specified area below.
-            Larger dots are larger earthquakes.
+            Larger dots are larger earthquakes. Click on an earthquake for additional details.
 
             Enter your zip code below and use the slider to set the range you would
             like history for.
@@ -174,7 +174,7 @@ def loaded_fig(df, centLat, centLon):
 
             text=[f"""place: {x['place']}<br>UTC time: {datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>mag: {x['mag']}"""
                   for _, x in df.iterrows()],
-            hoverinfo='text'
+            hoverinfo='none'
         )
     ]
 

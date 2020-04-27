@@ -11,6 +11,10 @@ import numpy as np
 import datetime
 from app import app
 from . import BASE_URL
+import sys
+from timezonefinder import TimezoneFinder
+
+from dateutil import tz
 
 SOURCES = ['USGS', 'EMSC']
 
@@ -22,7 +26,7 @@ column1 = dbc.Col(
             larger earthquakes.
 
             Use the drop down menu what period of time you would like
-            to see earthquakes for.
+            to see earthquakes for. Click on a quake for detailed information.
 
             You can adjust for minimum magnitude using the slider below
 
@@ -61,7 +65,8 @@ column1 = dbc.Col(
                 step=.5,
                 value=5.5
             ),
-            dcc.Markdown(id='sliderOutput')
+            dcc.Markdown(id='sliderOutput'),
+            html.Div(id='Details')
         ])
     ], style={'margin-top': 50}),
     md=3,
@@ -163,7 +168,7 @@ def build_fig(data, layout, title):
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title)
     fig.update_layout(margin={'l': 0, 'r': 0, 'b': 0, 't': 50})
-    return dcc.Graph(figure=fig)
+    return dcc.Graph(figure=fig, id='mapZone')
 
 
 def loaded_fig(df):
@@ -179,9 +184,9 @@ def loaded_fig(df):
                 color=df['color'],
             ),
 
-            text=[f"""place: {x['place']}<br>UTC time: {datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>mag: {x['mag']}"""
+            text=[f"""{x['place']}<br>{datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>{x['mag']}<br>{x['lat']}<br>{x['lon']}"""
                   for _, x in df.iterrows()],
-            hoverinfo='text'
+            hoverinfo='none'
         )
     ]
 
@@ -197,6 +202,7 @@ def loaded_fig(df):
             pitch=0,
             zoom=.5
         ),
+        clickmode='event+select'
     )
     return data, layout
 
@@ -226,9 +232,53 @@ def empty_fig():
     return data, layout
 
 
-column2 = dbc.Col([html.Div(
-    id='wheretheDataGoes')
-])
+column2 = dbc.Col([html.Div(dcc.Graph(id='mapZone'),
+                            id='wheretheDataGoes')
+                   ])
+
+
+@app.callback(
+    dash.dependencies.Output('Details', 'children'),
+    [dash.dependencies.Input('mapZone', 'clickData')])
+def show_details(clickData):
+    try:
+        text = clickData['points'][0]['text'].split('<br>')
+        time = text[1]
+        local_time, your_time = get_local_time(time, text[3], text[4])
+        display = [html.H4('Details:'),
+                   dcc.Markdown(f'''
+            **Place:** {text[0]}
+
+            UTC time: {text[1]}
+
+            Local time: {local_time}
+
+            Your time: {your_time}
+
+            Magnitude: {text[2]}
+
+            Latitude: {text[3]}
+
+            Longitude: {text[4]}
+        ''')]
+
+        return display
+    except:
+        e = sys.exc_info()[0]
+        print(e)
+
+
+def get_local_time(utc_time, lat, lon):
+    from_zone = tz.gettz('UTC')
+    tf = TimezoneFinder()
+    to_zone = tz.gettz(tf.timezone_at(lng=float(lon), lat=float(lat)))
+    your_zone = tz.tzlocal()
+    utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
+    utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
+    local_time = utc.astimezone(to_zone)
+    your_time = utc.astimezone(your_zone)
+    return local_time, your_time
+
 
 layout = html.Div([
     html.Div(dbc.Row(dbc.Col(html.H1('Recent Worldwide Earthquakes'))), style={'text-align': 'center',
