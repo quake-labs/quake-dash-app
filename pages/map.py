@@ -107,7 +107,8 @@ def dual_source(value, mag):
                 df = df.append(data.json()['message'])
     if df.shape[0] > 0:
         title = f'Quakes over {mag} from Both USGS and EMSC in the last {value.strip("/")}'
-        df['color'] = df['Oceanic'].apply(lambda x: 'yellow' if x != x else 'blue')
+        df['color'] = df['Oceanic'].apply(
+            lambda x: 'yellow' if x != x else 'blue')
         data, layout = loaded_fig(df)
     else:
         title = f'No Quakes over {mag} from either USGS or EMSC in the last {value.strip("/")}'
@@ -128,7 +129,8 @@ def dual_last(mag):
         title = f'Last Quake over {mag}'
         data = quakes[0] if quakes[0]['time'] > quakes[1]['time'] else quakes[1]
         df = pd.DataFrame(data, index=[0])
-        df['color'] = df['Oceanic'].apply(lambda x: 'yellow' if x != x else 'blue')
+        df['color'] = df['Oceanic'].apply(
+            lambda x: 'yellow' if x != x else 'blue')
         data, layout = loaded_fig(df)
     else:
         title = f'No Quakes Over {mag} in either USGS or EMSC'
@@ -273,7 +275,8 @@ def get_local_time(utc_time, lat, lon):
     tf = TimezoneFinder()
     to_zone = tz.gettz(tf.timezone_at(lng=float(lon), lat=float(lat)))
     your_zone = tz.tzlocal()
-    utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
+    utc = datetime.datetime.strptime(
+        utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
     utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
     local_time = utc.astimezone(to_zone)
     your_time = utc.astimezone(your_zone)
@@ -299,9 +302,14 @@ def show_details(clickData):
     title = html.H4('Comments:')
     try:
         text = clickData['points'][0]['text'].split('<br>')
-        api_url = BASE_URL + f"comments/{'USGS' if text[5]=='blue' else 'EMSC'}/{text[6]}"
-        data = requests.get(api_url).json()
-        print(data)
+        api_url = BASE_URL + \
+            f"comments/{'USGS' if text[5]=='blue' else 'EMSC'}/{text[6]}"
+        data = requests.get(api_url)
+        try:
+            data = data.json()
+        except Exception as ex:
+            print("something happened")
+            raise ex
         if data['num_comments'] == 0:
             return [title, dcc.Markdown('No comments on this quake to display. Add one on the left!')]
         else:

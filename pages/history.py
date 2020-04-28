@@ -9,8 +9,7 @@ import requests
 import pandas as pd
 import numpy as np
 import datetime
-from app import app
-from uszipcode import SearchEngine
+from app import app, location_search
 from . import BASE_URL
 
 from dateutil import tz
@@ -103,7 +102,6 @@ def update_output(dist, zip, source):
 
 # This creates an answer from one source
 def single_source(zip, dist, source):
-    location_search = SearchEngine(simple_zipcode=True)
     location = location_search.by_zipcode(str(zip))
     lat = location.to_dict()['lat']
     lon = location.to_dict()['lng']
@@ -144,7 +142,8 @@ def dual_source(zip, dist):
     # check that there are any quakes
     if df.shape[0] > 0:
         title = f'Quakes within {dist} KM of {zip} from both USGS and EMSC'
-        df['color'] = df['Oceanic'].apply(lambda x: 'yellow' if x != x else 'blue')
+        df['color'] = df['Oceanic'].apply(
+            lambda x: 'yellow' if x != x else 'blue')
         data, layout = loaded_fig(df, lat, lon)
     else:
         title = f'No Quakes have occured within {dist} KM of {zip} in either USGS or EMSC'
@@ -222,7 +221,8 @@ def empty_fig(centLat=None, centLon=None):
 
 def build_fig(data, layout, title, locA=None, locB=None):
     fig = go.Figure(data=data, layout=layout)
-    fig.update_layout(mapbox_style='stamen-terrain', height=700, title=title, showlegend=False)
+    fig.update_layout(mapbox_style='stamen-terrain',
+                      height=700, title=title, showlegend=False)
     fig.update_layout(margin={'l': 0, 'r': 0, 'b': 0, 't': 50})
     if locA != None:
         fig.add_trace(go.Scattermapbox(
@@ -276,7 +276,8 @@ def get_local_time(utc_time, to):
     from_zone = tz.gettz('UTC')
     to_zone = tz.gettz(f'US/{to}')
     your_zone = tz.tzlocal()
-    utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
+    utc = datetime.datetime.strptime(
+        utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
     utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
     local_time = utc.astimezone(to_zone)
     your_time = utc.astimezone(your_zone)
