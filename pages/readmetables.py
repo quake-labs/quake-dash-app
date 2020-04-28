@@ -32,24 +32,35 @@ routes = '''
       <td>Endpoint</td>
       <td>Access Control</td>
       <td>Description</td>
+      </tr>
       <tr>
         <td>GET</td>
         <td>`/lastQuake/SOURCE/MAGNITUDE`</td>
         <td>Public</td>
         <td>Returns the last quake over the given magnitude from the source</td>
       </tr>
+      <tr>
       <td>GET</td>
       <td>`/last/SOURCE/TIME/MAGNITUDE`</td>
       <td>Public</td>
       <td>Gets the quakes over the given timeframe</td>
     </tr>
+    <tr>
     <td>GET</td>
     <td>`/history/SOURCE/LAT,LON,DIST`</td>
     <td>Public</td>
     <td>Returns all quakes in a given area</td>
     </tr>
+    <tr>
     <td>GET</td>
     <td>`/zip/ZIPCODE/DIST`</td>
     <td>Public</td>
     <td>Returns last quake in a given area</td>
+    </tr>
+    <tr>
+    <td> GET, POST </td>
+    <td> `/comments/SOURCE/QUAKE` </td>
+    <td> Public </td>
+    <td> Gets or Posts comments about quakes </td>
+    </tr>
 '''
