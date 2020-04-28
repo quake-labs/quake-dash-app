@@ -65,8 +65,7 @@ column1 = dbc.Col(
                 step=.5,
                 value=5.5
             ),
-            dcc.Markdown(id='sliderOutput'),
-            html.Div(id='Details')
+            dcc.Markdown(id='sliderOutput')
         ])
     ], style={'margin-top': 50}),
     md=3,
@@ -283,18 +282,48 @@ def get_local_time(utc_time, lat, lon):
 
 def comments_box(source, quakeID):
     source = 'USGS' if source == 'blue' else 'EMSC'
-    content = html.Form([dcc.Input(id='sourceForm', value=source, type='hidden'),
-                         dcc.Input(id='quakeID', value=quakeID, type='hidden'),
+    content = html.Form([html.H4('Add a Public Comment'),
                          dcc.Markdown('Display Name:'),
-                         dcc.Input(id='display_name'),
+                         dcc.Input(name='display_name'),
                          dcc.Markdown('What was it like?'),
-                         dcc.Input(id='comment'),
-                         html.Button('Submit Comment', type='submit')], action='/', method='post')
+                         dcc.Input(name='comment'),
+                         dcc.Input(type='hidden', name='redirect', value='/'),
+                         html.Button('Submit Comment', type='submit')], action=f'{BASE_URL}comments/{source}/{quakeID}', method='post')
     return content
 
+
+@app.callback(
+    dash.dependencies.Output('Comments', 'children'),
+    [dash.dependencies.Input('mapZone', 'clickData')])
+def show_details(clickData):
+    title = html.H4('Comments:')
+    try:
+        text = clickData['points'][0]['text'].split('<br>')
+        api_url = BASE_URL + f"comments/{'USGS' if text[5]=='blue' else 'EMSC'}/{text[6]}"
+        data = requests.get(api_url).json()
+        print(data)
+        if data['num_comments'] == 0:
+            return [title, dcc.Markdown('No comments on this quake to display. Add one on the left!')]
+        else:
+            comments_area = []
+            for comment in data['message']:
+                comments_area.append(html.Div([
+                    html.P(f'User: {comment["name"]}'),
+                    html.P(f'{comment["comment"]}')
+                ]))
+            return [title, html.Div(comments_area)]
+
+    except:
+        e = sys.exc_info()
+        print(e)
+
+
+details = dbc.Col(id='Details')
+comments_col = dbc.Col(id='Comments')
 
 layout = html.Div([
     html.Div(dbc.Row(dbc.Col(html.H1('Recent Worldwide Earthquakes'))), style={'text-align': 'center',
                                                                                'margin-top': 40}),
-    dbc.Row([column1, column2])
+    dbc.Row([column1, column2]),
+    dbc.Row([details, comments_col], style={'margin-top': '20px'})
 ])
