@@ -61,11 +61,17 @@ readme = dbc.Col([
 
             `ZIPCODE`: a US 5 digit zip code
 
-            `DIST`: the distance out to check for the last quake, defaults to 20km''')
+            `DIST`: the distance out to check for the last quake, defaults to 20km
+
+            5. `/comments/SOURCE/QUAKE` - gets or posts comments about quakes
+
+            `SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource the quake is in
+
+            `QUAKE`: the earthquake's ID number''')
               ], style={'margin-top': 20}),  # closes route usage div
     html.Div([html.H2('Response Format'),
               dcc.Markdown('''
-The API will return data in the following format:
+The history routes will return data in the following format:
 ```
  "message": Contains the quakes returned in format:
          "Oceanic": a boolean value for if the quake was in the ocean (only for USGS quakes, not reliable),
@@ -79,6 +85,16 @@ The API will return data in the following format:
  "status_code": standard web status codes
  "boundingA": Only returned on history route, Northwest corner of the bounding box
  "boundingB": Only returned on history route, Southeast corner of the bounding box
+ ```
+
+ The comments route will return data in the following format:
+
+ ```
+ "message": contains a list of comments in the format:
+        "name": the display name of the User
+        "comment": the comment
+"num_comments": the number of comments returned
+"status_code": web status codes
         ''')
               ]),  # closes response format div
     html.Div([html.H2('Tech Stack'),
