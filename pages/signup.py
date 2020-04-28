@@ -24,8 +24,9 @@ submit_btn = dbc.Button("Get Notified", color="primary")
 
 form = dbc.Form([phonenumber, zipcode, submit_btn])
 
-column1 = dbc.Col([html.Div([html.Img(src="assets/sms.png")], className="phone-image")])
+column1 = dbc.Col([html.Div([html.Img(src="assets/sms.png",
+                                      className="img-responsive", width="80%")], className="phone-image")])
 
 column2 = dbc.Col([form])
 
-layout = dbc.Row([column1, column2], style={"margin-top": 100, "height": 1000})
+layout = dbc.Row([column1, column2], style={"margin-top": 100})
