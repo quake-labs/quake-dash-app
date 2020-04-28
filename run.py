@@ -7,10 +7,11 @@ from dash.dependencies import Input, Output
 
 # Imports from this application
 from app import app, server
-from pages import history, map, histogram, aboutapi, tips, search
+from pages import history, map, histogram, aboutapi, tips, search, signup
 
 # Import RE for dynamic URLs for quake details
 import re
+
 """
 https://dash-bootstrap-components.opensource.faculty.ai/l/components/navbar
 
@@ -31,17 +32,20 @@ navbar = dbc.NavbarSimple(
     brand="Quake Labs",
     brand_href="/",
     children=[
+        dbc.NavItem(dcc.Link("Local History", href="/history", className="nav-link")),
         dbc.NavItem(
-            dcc.Link("Local History", href="/history", className="nav-link")
+            dcc.Link("Earthquake Saftey Tips", href="/tips", className="nav-link")
         ),
-        dbc.NavItem(dcc.Link("Earthquake Saftey Tips", href="/tips", className="nav-link")),
+        dbc.NavItem(
+            dcc.Link("Get SMS Notifications", href="/signup", className="nav-link")
+        ),
         dbc.NavItem(dcc.Link("About The API", href="/aboutapi", className="nav-link")),
     ],
     sticky="top",
     color="dark",
     light=False,
     dark=True,
-    style={'height': '15px'}
+    style={"height": "15px"},
 )
 
 footer = dbc.Container(
@@ -88,14 +92,16 @@ def display_page(pathname):
         return history.layout
     elif pathname == "/histogram":
         return histogram.layout
-    elif pathname == '/aboutapi':
+    elif pathname == "/aboutapi":
         return aboutapi.layout
-    elif pathname == '/tips':
+    elif pathname == "/tips":
         return tips.layout
-    elif re.search('/quakedetail/*', str(pathname)):
+    elif re.search("/quakedetail/*", str(pathname)):
         return detail.layout
-    elif pathname == '/search':
+    elif pathname == "/search":
         return search.layout
+    elif pathname == "/signup":
+        return signup.layout
     else:
         return dcc.Markdown("## Page not found")
 
