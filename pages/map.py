@@ -184,7 +184,7 @@ def loaded_fig(df):
                 color=df['color'],
             ),
 
-            text=[f"""{x['place']}<br>{datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>{x['mag']}<br>{x['lat']}<br>{x['lon']}"""
+            text=[f"""{x['place']}<br>{datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>{x['mag']}<br>{x['lat']}<br>{x['lon']}<br>{x['color']}<br>{x['id']}"""
                   for _, x in df.iterrows()],
             hoverinfo='none'
         )
@@ -260,11 +260,12 @@ def show_details(clickData):
             Latitude: {text[3]}
 
             Longitude: {text[4]}
-        ''')]
+        '''),
+                   comments_box(text[5], text[6])]
 
         return display
     except:
-        e = sys.exc_info()[0]
+        e = sys.exc_info()
         print(e)
 
 
@@ -278,6 +279,18 @@ def get_local_time(utc_time, lat, lon):
     local_time = utc.astimezone(to_zone)
     your_time = utc.astimezone(your_zone)
     return local_time, your_time
+
+
+def comments_box(source, quakeID):
+    source = 'USGS' if source == 'blue' else 'EMSC'
+    content = html.Form([dcc.Input(id='sourceForm', value=source, type='hidden'),
+                         dcc.Input(id='quakeID', value=quakeID, type='hidden'),
+                         dcc.Markdown('Display Name:'),
+                         dcc.Input(id='display_name'),
+                         dcc.Markdown('What was it like?'),
+                         dcc.Input(id='comment'),
+                         html.Button('Submit Comment', type='submit')], action='/', method='post')
+    return content
 
 
 layout = html.Div([
