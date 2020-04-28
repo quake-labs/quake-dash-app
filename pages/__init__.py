@@ -1,1 +1,1 @@
-BASE_URL = 'https://quake-ds-staging.herokuapp.com/'
+BASE_URL = 'https://quake-ds-production.herokuapp.com/'
