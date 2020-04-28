@@ -44,12 +44,12 @@ h3 {
                 <h2>II. Earthquake Preparation Tips</h2>
                 <div className="emergency-kit">
                     <h3>Keep an emergency kit</h3>
-                    <p>An emergency kit can save the day should the worst ocur during an earthquake. Consider leaving a kit in your house, car, or bring one in your luggage should you find yourself in an earthquake prone area.</p>
+                    <p>An emergency kit can save the day should the worst ocur during an earthquake. Consider leaving a kit in your house, car, or bring one in your luggage should you find yourself in an earthquake prone area. Your emergency kit should include (but not be limited to):</p>
                     <ul className="tips-emergency-kit">
                         <li>Bandages</li>
                         <li>Gauze</li>
                         <li>Antiseptic</li>
-                        <li>Pain relievers (ibuprofen)</li>
+                        <li>Pain relievers (ibuprofen, aspirin)</li>
                         <li>Space blanket</li>
                         <li>Dust mask</li>
                         <li>Flashlight</li>
