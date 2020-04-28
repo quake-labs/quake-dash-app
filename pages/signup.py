@@ -20,7 +20,9 @@ zipcode = dbc.FormGroup(
     ]
 )
 
-form = dbc.Form([phonenumber, zipcode])
+submit_btn = dbc.Button("Get Notified", color="primary")
+
+form = dbc.Form([phonenumber, zipcode, submit_btn])
 
 column1 = dbc.Col([html.Div([html.Img(src="assets/sms.png")], className="phone-image")])
 

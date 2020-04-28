@@ -36,7 +36,9 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(
             dcc.Link("Earthquake Saftey Tips", href="/tips", className="nav-link")
         ),
-        dbc.NavItem(dcc.Link("Get Notified", href="/signup", className="nav-link")),
+        dbc.NavItem(
+            dcc.Link("Get SMS Notifications", href="/signup", className="nav-link")
+        ),
         dbc.NavItem(dcc.Link("About The API", href="/aboutapi", className="nav-link")),
     ],
     sticky="top",
