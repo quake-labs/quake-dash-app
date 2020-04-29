@@ -11,7 +11,8 @@ from .readmetables import team, routes
 
 
 readme = dbc.Col([
-    html.Div(html.H1('Quake Labs API'), style={'margin-top': 20, 'margin-bottom': 20}),
+    html.Div(html.H1('Quake Labs API'), style={
+             'margin-top': 20, 'margin-bottom': 20}),
 
     html.Div([html.H2('Project Overview'),
               dcc.Markdown(
@@ -24,7 +25,8 @@ readme = dbc.Col([
     ]),  # closes project overview div
 
     html.Div([html.H2('Team Members'),
-              dcc.Markdown('The Quake Labs API and Dashboard were designed and built by:'),
+              dcc.Markdown(
+                  'The Quake Labs API and Dashboard were designed and built by:'),
               html.Div(rawHtml(team), style={'text-align': 'center'})
               ]),  # closes team members div
     html.Div([html.H2('Accessing the API'),
@@ -108,7 +110,7 @@ The history routes will return data in the following format:
               ]),  # closes tech stack div
     html.Div([html.H2('Architecture'),
               dcc.Markdown('''
-    ![architecture](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1b61d2ba-287a-4a01-8c6f-98ae376dc2c9%2Fquake-architect-diagram.jpg)
+    ![architecture](assets/quake-labs-architect-diagram.png)
     ''')
               ]),  # closes Architecture div
     html.Div([html.H2('Data Sources'),
@@ -132,7 +134,8 @@ The history routes will return data in the following format:
 
         ''')
               ]),  # closes feature requests div
-    html.Div(html.P('Please feel free to contact our team with any questions at quakelabs@gmail.com'))
+    html.Div(html.P(
+        'Please feel free to contact our team with any questions at quakelabs@gmail.com'))
 ])  # closes readme column
 
 

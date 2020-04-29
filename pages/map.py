@@ -106,7 +106,8 @@ def dual_source(value, mag):
                 df = df.append(data.json()['message'])
     if df.shape[0] > 0:
         title = f'Quakes over {mag} from Both USGS and EMSC in the last {value.strip("/")}'
-        df['color'] = df['Oceanic'].apply(lambda x: 'yellow' if x != x else 'blue')
+        df['color'] = df['Oceanic'].apply(
+            lambda x: 'yellow' if x != x else 'blue')
         data, layout = loaded_fig(df)
     else:
         title = f'No Quakes over {mag} from either USGS or EMSC in the last {value.strip("/")}'
@@ -127,7 +128,8 @@ def dual_last(mag):
         title = f'Last Quake over {mag}'
         data = quakes[0] if quakes[0]['time'] > quakes[1]['time'] else quakes[1]
         df = pd.DataFrame(data, index=[0])
-        df['color'] = df['Oceanic'].apply(lambda x: 'yellow' if x != x else 'blue')
+        df['color'] = df['Oceanic'].apply(
+            lambda x: 'yellow' if x != x else 'blue')
         data, layout = loaded_fig(df)
     else:
         title = f'No Quakes Over {mag} in either USGS or EMSC'
