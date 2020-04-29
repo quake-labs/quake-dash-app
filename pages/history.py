@@ -11,6 +11,7 @@ import numpy as np
 import datetime
 from app import app, location_search
 from . import BASE_URL
+from .comments import *
 
 from dateutil import tz
 import sys
@@ -63,8 +64,7 @@ column1 = dbc.Col(
                 step=10,
                 value=20
             ),
-            dcc.Markdown(id='distanceOut'),
-            html.Div(id='quakeDetails')
+            dcc.Markdown(id='distanceOut')
         ])
     ], style={'margin-top': 20}),
     md=3,
@@ -90,10 +90,10 @@ def update_output(dist, zip, source):
     if len(str(zip)) == 5:
         # check out sources
         if source != 'BOTH':
-            print('running with one source')
+            print('running zip with one source')
             return single_source(zip, dist, source)
         else:
-            print('running with two sources')
+            print('running zip with two sources')
             return dual_source(zip, dist)
     else:
         # invalid zip code option
@@ -171,7 +171,7 @@ def loaded_fig(df, centLat, centLon):
                 color=df['color'],
             ),
 
-            text=[f"""place: {x['place']}<br>UTC time: {datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>mag: {x['mag']}"""
+            text=[f"""{x['place']}<br>{datetime.datetime.fromtimestamp(x['time']/1000.0)}<br>{x['mag']}<br>{x['lat']}<br>{x['lon']}<br>{x['color']}<br>{x['id']}"""
                   for _, x in df.iterrows()],
             hoverinfo='none'
         )
@@ -233,55 +233,12 @@ def build_fig(data, layout, title, locA=None, locB=None):
                     'color': 'red'})
         )
 
-    return dcc.Graph(figure=fig, id='theMap')
+    return dcc.Graph(figure=fig, id='mapZone')
 
 
-column2 = dbc.Col([html.Div(dcc.Graph(id='theMap'),
-                            id='themapgoeshere')
-                   ])
+column2 = dbc.Col(dcc.Markdown('loading map...', id='mapZone'),
+                  id='themapgoeshere')
 
-
-# Detailed Quakes
-@app.callback(
-    dash.dependencies.Output('quakeDetails', 'children'),
-    [dash.dependencies.Input('theMap', 'clickData'),
-     dash.dependencies.Input('zip', 'value')])
-def show_details(clickData, zip):
-    search = SearchEngine(simple_zipcode=True)
-    results = search.by_zipcode(str(zip)).to_dict()['timezone']
-    try:
-        text = clickData['points'][0]['text'].split('<br>')
-        time = text[1].strip('UTC time: ')
-        local_time, your_time = get_local_time(time, results)
-        display = [html.H4('Details:'),
-                   dcc.Markdown(f'''
-            **Place:** {text[0].strip('place: ')}
-
-            {text[1]}
-
-            Local time: {local_time}
-
-            Your Time: {your_time}
-
-            {text[2]}
-        ''')]
-
-        return display
-    except:
-        e = sys.exc_info()[0]
-        print(e)
-
-
-def get_local_time(utc_time, to):
-    from_zone = tz.gettz('UTC')
-    to_zone = tz.gettz(f'US/{to}')
-    your_zone = tz.tzlocal()
-    utc = datetime.datetime.strptime(
-        utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
-    utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
-    local_time = utc.astimezone(to_zone)
-    your_time = utc.astimezone(your_zone)
-    return local_time, your_time
 
 
 layout = html.Div([
@@ -289,4 +246,5 @@ layout = html.Div([
                                                                            'margin-top': 40,
                                                                            'margin-bottom': 0}),
     dbc.Row([column1, column2]),
+    dbc.Row([details, comments_col])
 ])

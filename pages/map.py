@@ -11,10 +11,9 @@ import numpy as np
 import datetime
 from app import app
 from . import BASE_URL
+from .comments import *
 import sys
-from timezonefinder import TimezoneFinder
 
-from dateutil import tz
 
 SOURCES = ['USGS', 'EMSC']
 
@@ -88,10 +87,10 @@ def display_min_mag(mag_num):
      dash.dependencies.Input('source', 'value')])
 def update_output(value, mag, source):
     if source != 'BOTH':
-        print('running with one source')
+        print('running time with one source')
         return single_source(value, mag, source)
     else:
-        print('running with two sources')
+        print('running time with two sources')
         return dual_source(value, mag)
 
 
@@ -233,101 +232,9 @@ def empty_fig():
     return data, layout
 
 
-column2 = dbc.Col([html.Div(dcc.Graph(id='mapZone'),
-                            id='wheretheDataGoes')
-                   ])
+column2 = dbc.Col(dcc.Markdown('loading map...', id='mapZone'),
+                  id='wheretheDataGoes')
 
-
-@app.callback(
-    dash.dependencies.Output('Details', 'children'),
-    [dash.dependencies.Input('mapZone', 'clickData')])
-def show_details(clickData):
-    try:
-        text = clickData['points'][0]['text'].split('<br>')
-        time = text[1]
-        local_time, your_time = get_local_time(time, text[3], text[4])
-        display = [html.H4('Details:'),
-                   dcc.Markdown(f'''
-            **Place:** {text[0]}
-
-            UTC time: {text[1]}
-
-            Local time: {local_time}
-
-            Your time: {your_time}
-
-            Magnitude: {text[2]}
-
-            Latitude: {text[3]}
-
-            Longitude: {text[4]}
-        '''),
-                   comments_box(text[5], text[6])]
-
-        return display
-    except:
-        e = sys.exc_info()
-        print(e)
-
-
-def get_local_time(utc_time, lat, lon):
-    from_zone = tz.gettz('UTC')
-    tf = TimezoneFinder()
-    to_zone = tz.gettz(tf.timezone_at(lng=float(lon), lat=float(lat)))
-    your_zone = tz.tzlocal()
-    utc = datetime.datetime.strptime(
-        utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
-    utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
-    local_time = utc.astimezone(to_zone)
-    your_time = utc.astimezone(your_zone)
-    return local_time, your_time
-
-
-def comments_box(source, quakeID):
-    source = 'USGS' if source == 'blue' else 'EMSC'
-    content = html.Form([html.H4('Add a Public Comment'),
-                         dcc.Markdown('Display Name:'),
-                         dcc.Input(name='display_name'),
-                         dcc.Markdown('What was it like?'),
-                         dcc.Input(name='comment'),
-                         dcc.Input(type='hidden', name='redirect', value='/'),
-                         html.Button('Submit Comment', type='submit')], action=f'{BASE_URL}comments/{source}/{quakeID}', method='post')
-    return content
-
-
-@app.callback(
-    dash.dependencies.Output('Comments', 'children'),
-    [dash.dependencies.Input('mapZone', 'clickData')])
-def show_details(clickData):
-    title = html.H4('Comments:')
-    try:
-        text = clickData['points'][0]['text'].split('<br>')
-        api_url = BASE_URL + \
-            f"comments/{'USGS' if text[5]=='blue' else 'EMSC'}/{text[6]}"
-        data = requests.get(api_url)
-        try:
-            data = data.json()
-        except Exception as ex:
-            print("something happened")
-            raise ex
-        if data['num_comments'] == 0:
-            return [title, dcc.Markdown('No comments on this quake to display. Add one on the left!')]
-        else:
-            comments_area = []
-            for comment in data['message']:
-                comments_area.append(html.Div([
-                    html.P(f'User: {comment["name"]}'),
-                    html.P(f'{comment["comment"]}')
-                ]))
-            return [title, html.Div(comments_area)]
-
-    except:
-        e = sys.exc_info()
-        print(e)
-
-
-details = dbc.Col(id='Details')
-comments_col = dbc.Col(id='Comments')
 
 layout = html.Div([
     html.Div(dbc.Row(dbc.Col(html.H1('Recent Worldwide Earthquakes'))), style={'text-align': 'center',
