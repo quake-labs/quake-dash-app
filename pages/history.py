@@ -236,9 +236,8 @@ def build_fig(data, layout, title, locA=None, locB=None):
     return dcc.Graph(figure=fig, id='mapZone')
 
 
-column2 = dbc.Col([html.Div(build_fig(*empty_fig(39.8283, -98.5795),''),
-                            id='themapgoeshere')
-                   ])
+column2 = dbc.Col(dcc.Markdown('loading map...', id='mapZone'),
+                  id='themapgoeshere')
 
 
 layout = html.Div([

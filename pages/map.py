@@ -230,14 +230,8 @@ def empty_fig():
     return data, layout
 
 
-column2 = dbc.Col([html.Div(build_fig(*empty_fig(),''),
-                            id='wheretheDataGoes')
-                   ])
-
-
-
-
-
+column2 = dbc.Col(dcc.Markdown('loading map...', id='mapZone'),
+                  id='wheretheDataGoes')
 
 
 layout = html.Div([
