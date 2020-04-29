@@ -109,11 +109,10 @@ def on_button_click(n, phonenumber, zipcode, is_phone_valid, is_zip_valid):
                 print(f"Phone number is: {phonenumber}")
                 print(f"Zipcode is: {zipcode}")
                 payload = {"phonenumber": phonenumber, "zipcode": zipcode}
-                payload = json.dumps(payload)
                 print(f"Sending payload: {payload}")
                 try:
                     res = requests.post(
-                        "https://quakelabs-sms-app.herokuapp.com/web", data=payload)
+                        "https://quakelabs-sms-app.herokuapp.com/web", json=payload)
                     print(res.text)
                 except Exception as ex:
                     print(ex)
