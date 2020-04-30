@@ -38,7 +38,7 @@ def show_details(clickData):
 
             Longitude: {text[4]}
         '''),
-                   comments_box(text[5], text[6])]
+                   comments_box()]
 
         return display
     except:
@@ -72,17 +72,21 @@ def show_details(clickData):
 def get_local_time(utc_time, lat, lon):
     from_zone = tz.gettz('UTC')
     tf = TimezoneFinder()
-    to_zone = tz.gettz(tf.timezone_at(lng=float(lon), lat=float(lat)))
+    to_zone = tz.gettz(tf.certain_timezone_at(lng=float(lon), lat=float(lat)))
+    print(to_zone)
     your_zone = tz.tzlocal()
-    utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
+    print(utc_time)
+    try:
+        utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S.%f')  # set the UTC time
+    except:  # sometimes the time isn't specific enoug and doesn't have a .%f
+        utc = datetime.datetime.strptime(utc_time, '%Y-%m-%d %H:%M:%S')
     utc = utc.replace(tzinfo=from_zone)  # set the utc timezone
     local_time = utc.astimezone(to_zone)
     your_time = utc.astimezone(your_zone)
     return local_time, your_time
 
 
-def comments_box(source, quakeID):
-    source = 'USGS' if source == 'blue' else 'EMSC'
+def comments_box():
     content = html.Div([html.H4('Add a Public Comment'),
                         dcc.Markdown('Display Name:'),
                         dcc.Input(name='display_name', id='display_name'),
@@ -107,9 +111,9 @@ def comments_area(data):
 
 
 last_click = 0
+
+
 # setting up the ability to submit comments
-
-
 @app.callback(dash.dependencies.Output('dumpzone', 'children'),
               [dash.dependencies.Input('submit_button', 'n_clicks'),
                dash.dependencies.Input('display_name', 'value'),
@@ -117,18 +121,24 @@ last_click = 0
                dash.dependencies.Input('mapZone', 'clickData')])
 def submit_comment(clicks, name, comment, clickData):
     global last_click
-    text = clickData['points'][0]['text'].split('<br>')
-    source = 'USGS' if text[5] == 'blue' else 'EMSC'
-    id = text[6]
     if clicks > last_click:
         if name != None and comment != None:
+            text = clickData['points'][0]['text'].split('<br>')
+            source = 'USGS' if text[5] == 'blue' else 'EMSC'
+            id = text[6]
             payload = {'display_name': name, 'comment': comment}
             api_url = BASE_URL + f'comments/{source}/{id}'
             print('sent request', payload)
-            # requests.post(api_url, data=payload)
+            requests.post(api_url, data=payload)
         last_click = clicks
+        return comments_area()
     else:
         print('tried to run')
+
+@app.callback(dash.dependencies.Output('comments_box', 'children'),
+              [dash.dependencies.Input('submit_button', 'n_clicks')])
+def reset_form(clicks):
+    return comments_box()
 
 
 details = dbc.Col(id='Details')
