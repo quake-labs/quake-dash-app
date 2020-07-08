@@ -92,7 +92,7 @@ The history routes will return data in the following format:
 
 ### Architecture
 
-![architecture](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1b61d2ba-287a-4a01-8c6f-98ae376dc2c9%2Fquake-architect-diagram.jpg)
+![architecture](assets/quake-labs-architect-diagram.png)
 
 ## Data Sources
 
