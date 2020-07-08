@@ -96,8 +96,8 @@ The history routes will return data in the following format:
 
 ## Data Sources
 
-    Our primary data source is the USGS geojson feed. [View the documentation](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php), or [search their data](https://earthquake.usgs.gov/earthquakes/search/).
-    For a further history of earthquakes we also collected the data available on [EMSC](https://www.emsc-csem.org/Earthquake/)
+ Our primary data source is the USGS geojson feed. [View the documentation](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php), or [search their data](https://earthquake.usgs.gov/earthquakes/search/).
+ For a further history of earthquakes we also collected the data available on [EMSC](https://www.emsc-csem.org/Earthquake/)
 
 ## Feature requests and Contributions
 Source code for the API is available [GitHub](https://github.com/quake-labs/quake-ds)
