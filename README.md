@@ -1,10 +1,10 @@
 
-## 1️⃣ Project Overview
+## Project Overview
 
 [Trello Board](https://trello.com/b/5WH9iB9n/labspt7-quake)<br>
 [Product Canvas](https://www.notion.so/User-Research-8cd64de109404266b2537457a426738d)
 
-## 2️⃣ Team Members
+## Team Members
 
 
 |                                       [Eyve Geordan](https://github.com/eyvonne)                                        |                                       [J Tyler Sheppard](https://github.com/jtsheppard)                                        |                                       [Ashwin Swamy](https://github.com/ash12hub)                                        | [Harsh Desai](https://github.com/hurshd0)|
@@ -13,7 +13,7 @@
 |                 [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/eyvonne)                 |            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/jtsheppard)             |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ash12hub)            |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/hurshd0)            |
 | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/eyvonne-geordan-2a2b55168/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/jtsheppard/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/hurshd/) |
 
-## 3️⃣ Endpoints
+## Endpoints
 
 ### How to connect to the data API
 
@@ -58,63 +58,50 @@ Staging Endpoint 👉 https://quake-ds-staging.herokuapp.com/
 `SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource the quake is in
 `QUAKE`: the earthquake's ID number
 
-## 4️⃣ Tech Stack 📚 
+### Response Format
+The history routes will return data in the following format:
+```
+ "message": Contains the quakes returned in format:
+         "Oceanic": a boolean value for if the quake was in the ocean (only for USGS quakes, not reliable),
+         "id": A numerical id of the quake in our database (unique per quake),
+         "lat": lattitude in degrees
+         "lon": longitude in degrees
+         "mag": Magnitude of the earthquake
+         "place": a Human readable representation of approximatly where the quake is
+         "time": the time that the quake occured in UTC in ms since Epoch}
+ "num_quakes": the number of quakes returned
+ "status_code": standard web status codes
+ "boundingA": Only returned on history route, Northwest corner of the bounding box
+ "boundingB": Only returned on history route, Southeast corner of the bounding box
+ ```
+ The comments route will return data in the following format:
+ ```
+ "message": contains a list of comments in the format:
+        "name": the display name of the User
+        "comment": the comment
+"num_comments": the number of comments returned
+"status_code": web status codes
+```
+## Tech Stack 
 
-- [Flask](https://flask.palletsprojects.com/en/1.1.x/)
-- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/)
+  - [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+  - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/)
+  - [AWS Lambda](https://docs.aws.amazon.com/lambda/index.html)
+  - [AWS RDS](https://docs.aws.amazon.com/rds/index.html)
+  - [Heroku](https://devcenter.heroku.com)
 
 ### Architecture
 
 ![architecture](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1b61d2ba-287a-4a01-8c6f-98ae376dc2c9%2Fquake-architect-diagram.jpg)
 
-## 5️⃣ Data Sources
+## Data Sources
 
--   [USGS Source 1](https://earthquake.usgs.gov/earthquakes/search/)
--   [USGS Source 2](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
--   [ESMC](https://www.emsc-csem.org/Earthquake/seismologist.php)
+    Our primary data source is the USGS geojson feed. [View the documentation](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php), or [search their data](https://earthquake.usgs.gov/earthquakes/search/).
+    For a further history of earthquakes we also collected the data available on [EMSC](https://www.emsc-csem.org/Earthquake/)
 
-### Extra Python Notebooks
-
-[Python Notebook 1](https://colab.research.google.com/drive/1g_zGrP7LCK4FNdJycQQcRJ_22iKL0_F6)
-
-## 6️⃣ Contributing
-
-When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
-
-Please note we have a [code of conduct](./code_of_conduct.md.md). Please follow it in all your interactions with the project.
-
-### Issue/Bug Request
-
- **If you are having an issue with the existing project code, please submit a bug report under the following guidelines:**
- - Check first to see if your issue has already been reported.
- - Check to see if the issue has recently been fixed by attempting to reproduce the issue using the latest master branch in the repository.
- - Create a live example of the problem.
- - Submit a detailed bug report including your environment & browser, steps to reproduce the issue, actual and expected outcomes,  where you believe the issue is originating from, and any potential solutions you have considered.
-
-### Feature Requests
-
-We would love to hear from you about new features which would improve this app and further the aims of our project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
-
-### Pull Requests
-
-If you have developed a patch, bug fix, or new feature that would improve this app, please submit a pull request. It is best to communicate your ideas with the developers first before investing a great deal of time into a pull request to ensure that it will mesh smoothly with the project.
-
-Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
-
-#### Pull Request Guidelines
-
-- Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-- Update the README.md with details of changes to the interface, including new plist variables, exposed ports, useful file locations and container parameters.
-- Ensure that your code conforms to our existing code conventions and test coverage.
-- Include the relevant issue number, if applicable.
-- You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
-
-### Attribution
-
-These contribution guidelines have been adapted from [this good-Contributing.md-template](https://gist.github.com/PurpleBooth/b24679402957c63ec426).
-
-## Documentation
-
-See [Backend Documentation](https://github.com/Lambda-School-Labs/quake-fe/blob/master/README.md) for details on the backend of our project.
-
-See [Front End Documentation](https://github.com/Lambda-School-Labs/quake-be/blob/master/README.md) for details on the front end of our project.
+## Feature requests and Contributions
+Source code for the API is available [GitHub](https://github.com/quake-labs/quake-ds)
+        Source code for the Dashboard is also available in this repo
+        We would love to hear from you about new features which would improve this app and further the aims of our project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
+        If you have developed a patch, bug fix, or new feature that would improve this app, please submit a pull request. It is best to communicate your ideas with the developers first before investing a great deal of time into a pull request to ensure that it will mesh smoothly with the project.
+        Remember that this project is licensed under the MIT license, and by submitting a pull request, you agree that your work will be, too.
