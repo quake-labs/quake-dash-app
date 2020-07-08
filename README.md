@@ -7,11 +7,11 @@
 ## 2️⃣ Team Members
 
 
-|                                       [Eyve Geordan](https://github.com/eyvonne)                                        |                                       [J Tyler Sheppard](https://github.com/jtsheppard)                                        |                                       [Ashwin Swamy](https://github.com/ash12hub)                                        |
-| :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
-|                      [<img src="https://media-exp1.licdn.com/dms/image/C5603AQFERauBl6COOA/profile-displayphoto-shrink_200_200/0?e=1599696000&v=beta&t=BNKzq4BbiMROu807cTrRA1UrhFMyF8ymU2CEiCQ9ocE" width = "200" />](https://github.com/eyvonne)                       |                      [<img src="https://avatars3.githubusercontent.com/u/49928887?s=460&u=232a4578fb11f9c5c38022723d0d5ed3b0d27b6f&v=4" width = "200" />](https://github.com/jtsheppard)                       |                      [<img src="https://raw.githubusercontent.com/quake-labs/quake-ds/master/ashwin.jpg" width = "200" />](https://github.com/ash12hub)                      |
-|                 [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/eyvonne)                 |            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/jtsheppard)             |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ash12hub)            |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/eyvonne-geordan-2a2b55168/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/jtsheppard/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/) |
+|                                       [Eyve Geordan](https://github.com/eyvonne)                                        |                                       [J Tyler Sheppard](https://github.com/jtsheppard)                                        |                                       [Ashwin Swamy](https://github.com/ash12hub)                                        | [Harsh Desai](https://github.com/hurshd0)|
+| :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
+|                      [<img src="https://media-exp1.licdn.com/dms/image/C5603AQFERauBl6COOA/profile-displayphoto-shrink_200_200/0?e=1599696000&v=beta&t=BNKzq4BbiMROu807cTrRA1UrhFMyF8ymU2CEiCQ9ocE" width = "200" />](https://github.com/eyvonne)                       |                      [<img src="https://avatars3.githubusercontent.com/u/49928887?s=460&u=232a4578fb11f9c5c38022723d0d5ed3b0d27b6f&v=4" width = "200" />](https://github.com/jtsheppard)                       |                      [<img src="https://raw.githubusercontent.com/quake-labs/quake-ds/master/ashwin.jpg" width = "200" />](https://github.com/ash12hub)                      |[<img src='https://media-exp1.licdn.com/dms/image/C4E03AQGYKgdNlcItIg/profile-displayphoto-shrink_200_200/0?e=1593043200&v=beta&t=DbV2KbYDHIDvpoz3r3Cv0MWj6ThZGzQtYu71JEMf7PY'>](https://github.com/hurshd0)|
+|                 [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/eyvonne)                 |            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/jtsheppard)             |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ash12hub)            |           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/hurshd0)            |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/eyvonne-geordan-2a2b55168/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/jtsheppard/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/hurshd/) |
 
 ## 3️⃣ Endpoints
 
@@ -27,7 +27,8 @@ Staging Endpoint 👉 https://quake-ds-staging.herokuapp.com/
 | GET    | `/lastQuake/SOURCE/MAGNITUDE` | all users      | Returns the last quake over the given magnitude from the source  |
 | GET    | `/last/SOURCE/TIME/MAGNITUDE` | all users      | Gets the quakes over the given timeframe |
 | GET    | `/history/SOURCE/LAT,LON,DIST` | all users      | Returns all quakes in a given area |
-
+| GET |`/zip/ZIPCODE/DIST` | all users | Returns last quake in a given area |
+| GET, POST | `/comments/SOURCE/QUAKE` | all users |Gets or Posts comments about quakes |
 ### How to use the routes
 
 1. `/lastQuake/SOURCE/MAGNITUDE` - Returns the last quake over the given magnitude from the source 
@@ -46,6 +47,16 @@ Staging Endpoint 👉 https://quake-ds-staging.herokuapp.com/
 `SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource to pull from
 `LAT` and `LON` are the central latitude and longitude  
 `DIST` is the distance in miles from the center to search from
+
+4. `/zip/ZIPCODE/DIST` - reutrns last quake around a given zip code
+
+`ZIPCODE`: a US 5 digit zip code
+`DIST`: the distance out to check for the last quake, defaults to 20km
+
+5. `/comments/SOURCE/QUAKE` - gets or posts comments about quakes
+
+`SOURCE`: choice of 'USGS' or 'EMSC' depending on which datasource the quake is in
+`QUAKE`: the earthquake's ID number
 
 ## 4️⃣ Tech Stack 📚 
 
